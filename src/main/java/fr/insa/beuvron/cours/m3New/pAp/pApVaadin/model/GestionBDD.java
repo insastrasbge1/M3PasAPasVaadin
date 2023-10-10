@@ -18,18 +18,27 @@ along with CoursBeuvron.  If not, see <http://www.gnu.org/licenses/>.
  */
 package fr.insa.beuvron.cours.m3New.pAp.pApVaadin.model;
 
+import fr.insa.beuvron.utils.ConsoleFdB;
+import fr.insa.beuvron.utils.exceptions.ExceptionsUtils;
 import java.io.BufferedReader;
 import java.io.FileReader;
 import java.io.IOException;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.SQLException;
+import java.sql.Statement;
 
 /**
  *
  * @author francois
  */
 public class GestionBDD {
+
+    private Connection conn;
+
+    public GestionBDD(Connection conn) {
+        this.conn = conn;
+    }
 
     public static Connection connectGeneralMySQL(String host,
             int port, String database,
@@ -65,9 +74,118 @@ public class GestionBDD {
                 getPassPourServeurM3());
     }
 
+    /**
+     * Creation du schéma. On veut créer tout ou rien, d'où la gestion explicite
+     * des transactions.
+     *
+     * @throws SQLException
+     */
+    public void creeSchema() throws SQLException {
+        this.conn.setAutoCommit(false);
+        try (Statement st = this.conn.createStatement()) {
+            st.executeUpdate(
+                    "create table li_utilisateur (\n"
+                    + "    id integer not null primary key AUTO_INCREMENT,\n"
+                    + "    nom varchar(30) not null unique,\n"
+                    + "    pass varchar(30) not null\n"
+                    + ")\n"
+            );
+            st.executeUpdate(
+                    "create table li_likes (\n"
+                    + "    u1 integer not null,\n"
+                    + "    u2 integer not null\n"
+                    + ")\n"
+            );
+            this.conn.commit();
+            st.executeUpdate(
+                    "alter table li_likes \n"
+                    + "    add constraint fk_li_likes_u1 \n"
+                    + "    foreign key (u1) references li_utilisateur(id) \n"
+            );
+            st.executeUpdate(
+                    "alter table li_likes \n"
+                    + "    add constraint fk_li_likes_u2 \n"
+                    + "    foreign key (u2) references li_utilisateur(id) \n"
+            );
+        } catch (SQLException ex) {
+            this.conn.rollback();
+            throw ex;
+        } finally {
+            this.conn.setAutoCommit(true);
+        }
+    }
+
+    /**
+     * Suppression du schéma. Le schéma n'est peut-être pas créé, ou pas
+     * entièrement créé, on ne s'arrête donc pas en cas d'erreur : on ne fait
+     * que passer à la suite
+     *
+     * @throws SQLException
+     */
+    public void deleteSchema() throws SQLException {
+        try (Statement st = this.conn.createStatement()) {
+            // pour être sûr de pouvoir supprimer, il faut d'abord supprimer les liens
+            // puis les tables
+            // suppression des liens
+            try {
+                st.executeUpdate("alter table li_likes drop constraint fk_li_likes_u1");
+            } catch (SQLException ex) {
+                // nothing to do : maybe the constraint was not created
+            }
+            try {
+                st.executeUpdate("alter table li_likes drop constraint fk_li_likes_u2");
+            } catch (SQLException ex) {
+            }
+            // je peux maintenant supprimer les tables
+            try {
+                st.executeUpdate("drop table li_likes");
+            } catch (SQLException ex) {
+            }
+            try {
+                st.executeUpdate("drop table li_utilisateur");
+            } catch (SQLException ex) {
+            }
+        }
+    }
+    
+    public void razBDD() throws SQLException {
+        this.deleteSchema();
+        this.creeSchema();
+    }
+    
+        public void menuPrincipal() {
+        int rep = -1;
+        while (rep != 0) {
+            int i = 1;
+            System.out.println("Menu principal");
+            System.out.println("==============");
+            System.out.println((i++) + ") supprimer schéma");
+            System.out.println((i++) + ") créer schéma");
+            System.out.println((i++) + ") RAZ BDD");
+            System.out.println("0) Fin");
+            rep = ConsoleFdB.entreeEntier("Votre choix : ");
+            try {
+                int j = 1;
+                if (rep == j++) {
+                    this.deleteSchema();
+                } else if (rep == j++) {
+                    this.creeSchema();
+                } else if (rep == j++) {
+                    this.razBDD();
+                }
+            } catch (SQLException ex) {
+                System.out.println(ExceptionsUtils.messageEtPremiersAppelsDansPackage(ex, "fr.insa.beuvron", 5));
+            }
+        }
+    }
+
+
+
     public static void debut() {
         try (Connection con = connectSurServeurM3()) {
             System.out.println("connecté");
+            GestionBDD gestionnaire = new GestionBDD(con);
+            gestionnaire.menuPrincipal();
         } catch (SQLException ex) {
             throw new Error("Connection impossible", ex);
         }
@@ -75,5 +193,12 @@ public class GestionBDD {
 
     public static void main(String[] args) {
         debut();
+    }
+
+    /**
+     * @return the conn
+     */
+    public Connection getConn() {
+        return conn;
     }
 }
