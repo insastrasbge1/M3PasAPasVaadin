@@ -20,6 +20,7 @@ package fr.insa.beuvron.cours.m3New.pAp.pApVaadin.model;
 
 import fr.insa.beuvron.utils.ConsoleFdB;
 import fr.insa.beuvron.utils.exceptions.ExceptionsUtils;
+import fr.insa.beuvron.utils.list.ListUtils;
 import java.io.BufferedReader;
 import java.io.FileReader;
 import java.io.IOException;
@@ -27,6 +28,7 @@ import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.util.List;
 
 /**
  *
@@ -147,13 +149,48 @@ public class GestionBDD {
             }
         }
     }
-    
+
+    public void initTest() throws SQLException {
+        Utilisateur fdb = new Utilisateur("fdb", "pass");
+        fdb.saveInDBV1(this.conn);
+        Utilisateur toto = new Utilisateur("toto", "pass");
+        toto.saveInDBV1(this.conn);
+    }
+
     public void razBDD() throws SQLException {
         this.deleteSchema();
         this.creeSchema();
+        this.initTest();
     }
-    
-        public void menuPrincipal() {
+
+    public void menuUtilisateur() {
+        int rep = -1;
+        while (rep != 0) {
+            int i = 1;
+            System.out.println("Menu utilisateur");
+            System.out.println("================");
+            System.out.println((i++) + ") lister les utilisateurs");
+            System.out.println((i++) + ") ajouter un utilisateur");
+            System.out.println("0) Fin");
+            rep = ConsoleFdB.entreeEntier("Votre choix : ");
+            try {
+                int j = 1;
+                if (rep == j++) {
+                    List<Utilisateur> users = Utilisateur.tousLesUtilisateurs(this.conn);
+                    System.out.println(users.size() + " utilisateurs : ");
+                    System.out.println(ListUtils.enumerateList(users));
+                } else if (rep == j++) {
+                    System.out.println("entrez un nouvel utilisateur : ");
+                    Utilisateur nouveau = Utilisateur.demande();
+                    nouveau.saveInDBV1(this.conn);
+                }
+            } catch (SQLException ex) {
+                System.out.println(ExceptionsUtils.messageEtPremiersAppelsDansPackage(ex, "fr.insa.beuvron", 5));
+            }
+        }
+    }
+
+    public void menuPrincipal() {
         int rep = -1;
         while (rep != 0) {
             int i = 1;
@@ -161,7 +198,8 @@ public class GestionBDD {
             System.out.println("==============");
             System.out.println((i++) + ") supprimer schéma");
             System.out.println((i++) + ") créer schéma");
-            System.out.println((i++) + ") RAZ BDD");
+            System.out.println((i++) + ") RAZ BDD = supp + crée + init");
+            System.out.println((i++) + ") gestion des utilisateurs");
             System.out.println("0) Fin");
             rep = ConsoleFdB.entreeEntier("Votre choix : ");
             try {
@@ -172,14 +210,14 @@ public class GestionBDD {
                     this.creeSchema();
                 } else if (rep == j++) {
                     this.razBDD();
+                } else if (rep == j++) {
+                    this.menuUtilisateur();
                 }
             } catch (SQLException ex) {
                 System.out.println(ExceptionsUtils.messageEtPremiersAppelsDansPackage(ex, "fr.insa.beuvron", 5));
             }
         }
     }
-
-
 
     public static void debut() {
         try (Connection con = connectSurServeurM3()) {
