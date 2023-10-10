@@ -1,4 +1,8 @@
 /target/
+
+# fdb : pour ne pas donner mon mot de passe BdD
+pass.txt
+
 .idea/
 .vscode/
 .settings
