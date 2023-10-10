@@ -1,4 +1,4 @@
-package com.example.application.views.main;
+package fr.insa.beuvron.cours.m3New.pAp.pApVaadin.gui.views;
 
 import com.vaadin.flow.component.Key;
 import com.vaadin.flow.component.button.Button;

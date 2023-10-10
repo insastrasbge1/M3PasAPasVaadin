@@ -4,10 +4,10 @@
     <modelVersion>4.0.0</modelVersion>
     <!-- Project from https://start.vaadin.com/project/a8cb3406-a2ce-4a52-8ad3-8bcdf365cc48 -->
     <groupId>com.example.application</groupId>
-    <artifactId>mytodo</artifactId>
-    <name>mytodo</name>
+    <artifactId>M3PasAPasVaadin</artifactId>
+    <name>M3PasAPasVaadin</name>
     <version>1.0-SNAPSHOT</version>
-    <packaging>jar</packaging>
+    <packaging>war</packaging>
 
     <properties>
         <java.version>17</java.version>
