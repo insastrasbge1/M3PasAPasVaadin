@@ -9,4 +9,13 @@
                 <goal>-Pproduction</goal>
             </goals>
         </action>
+        <action>
+            <actionName>CUSTOM-toProd2</actionName>
+            <displayName>toProd2</displayName>
+            <goals>
+                <goal>clean</goal>
+                <goal>package</goal>
+                <goal>-Pproduction</goal>
+            </goals>
+        </action>
     </actions>

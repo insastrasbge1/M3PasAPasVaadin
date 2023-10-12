@@ -29,6 +29,7 @@ import java.sql.DriverManager;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.List;
+import java.util.Optional;
 
 /**
  *
@@ -170,6 +171,7 @@ public class GestionBDD {
             System.out.println("Menu utilisateur");
             System.out.println("================");
             System.out.println((i++) + ") lister les utilisateurs");
+            System.out.println((i++) + ") login ");
             System.out.println((i++) + ") ajouter un utilisateur");
             System.out.println("0) Fin");
             rep = ConsoleFdB.entreeEntier("Votre choix : ");
@@ -179,6 +181,15 @@ public class GestionBDD {
                     List<Utilisateur> users = Utilisateur.tousLesUtilisateurs(this.conn);
                     System.out.println(users.size() + " utilisateurs : ");
                     System.out.println(ListUtils.enumerateList(users));
+                } else if (rep == j++) {
+                    String nom = ConsoleFdB.entreeString("nom : ");
+                    String pass = ConsoleFdB.entreeString("pass : ");
+                    Optional<Utilisateur> user = Utilisateur.login(conn, nom, pass);
+                    if (user.isPresent()) {
+                        System.out.println("ok");
+                    } else {
+                        System.out.println("NON");
+                    }
                 } else if (rep == j++) {
                     System.out.println("entrez un nouvel utilisateur : ");
                     Utilisateur nouveau = Utilisateur.demande();
