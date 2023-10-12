@@ -15,12 +15,15 @@ import com.vaadin.flow.component.textfield.TextField;
  * @author francois
  */
 public class LoginForm extends FormLayout {
+    
+    private MainView main;
 
     private TextField tfNom;
     private PasswordField pfPass;
     private Button bOK;
 
-    public LoginForm() {
+    public LoginForm(MainView main) {
+        this.main = main;
         this.tfNom = new TextField("nom");
         this.pfPass = new PasswordField("pass");
         this.bOK = new Button("inscription");

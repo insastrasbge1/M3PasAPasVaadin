@@ -11,15 +11,24 @@ import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
  *
  * @author francois
  */
-public class EnteteLogin extends HorizontalLayout{
-    
+public class EnteteLogin extends HorizontalLayout {
+
+    private MainView main;
+
     public Button bLogin;
     public Button bInscription;
-    
-    public EnteteLogin() {
+
+    public EnteteLogin(MainView main) {
+        this.main = main;
         this.bLogin = new Button("Login");
-        this.bInscription = new Button("Inscription");
-        this.add(this.bLogin,this.bInscription);
+        this.bLogin.addClickListener((t) -> {
+            this.main.changeContent(new LoginForm(this.main));
+        });
+       this.bInscription = new Button("Inscription");
+        this.bInscription.addClickListener((t) -> {
+            this.main.changeContent(new InscriptionForm(this.main));
+        });
+         this.add(this.bLogin, this.bInscription);
     }
-    
+
 }

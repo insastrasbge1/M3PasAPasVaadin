@@ -1,9 +1,12 @@
 package fr.insa.beuvron.cours.m3New.pAp.pApVaadin.gui.views;
 
+import com.vaadin.flow.component.Component;
 import com.vaadin.flow.component.Key;
 import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.notification.Notification;
+import com.vaadin.flow.component.orderedlayout.FlexComponent.Alignment;
 import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
+import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 import com.vaadin.flow.component.textfield.NumberField;
 import com.vaadin.flow.component.textfield.TextField;
 import com.vaadin.flow.router.PageTitle;
@@ -13,31 +16,27 @@ import java.util.concurrent.atomic.AtomicInteger;
 
 @PageTitle("Main")
 @Route(value = "")
-public class MainView extends HorizontalLayout {
-    
-    public static AtomicInteger compteur = new AtomicInteger(0);
-    
-    public Connection conn;
+public class MainView extends VerticalLayout {
 
-    private TextField name;
-    private Button sayHello;
-    private NumberField compteurStatic;
+    private HorizontalLayout entete;
+    private VerticalLayout content;
 
     public MainView() {
-        name = new TextField("Your name");
-        sayHello = new Button("Say hello");
-        sayHello.addClickListener(e -> {
-            Notification.show("Hello " + name.getValue());
-            this.compteurStatic.setValue(0.0+compteur.incrementAndGet());
-        });
-        sayHello.addClickShortcut(Key.ENTER);
+        this.entete = new HorizontalLayout();
+        this.content = new VerticalLayout();
+        this.add(this.entete,this.entete);
+        this.changeEntete(new EnteteLogin(this));
+        this.changeContent(new MessageBienvenue());
+    }
+    
+    public void changeEntete(Component c) {
+        this.entete.removeAll();
+        this.entete.add(c);
+    }
 
-        setMargin(true);
-        setVerticalComponentAlignment(Alignment.END, name, sayHello);
-
-        this.compteurStatic = new NumberField("compteur static");
-        this.compteurStatic.setValue(0.0);
-        add(name, sayHello,this.compteurStatic);
+    public void changeContent(Component c) {
+        this.content.removeAll();
+        this.content.add(c);
     }
 
 }
