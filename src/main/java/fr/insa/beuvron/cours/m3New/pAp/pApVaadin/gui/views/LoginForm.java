@@ -26,7 +26,7 @@ public class LoginForm extends FormLayout {
         this.main = main;
         this.tfNom = new TextField("nom");
         this.pfPass = new PasswordField("pass");
-        this.bOK = new Button("inscription");
+        this.bOK = new Button("login");
         this.bOK.addClickListener((t) -> {
             String nom = this.tfNom.getValue();
             Notification.show("TODO login de " + nom + "dans BdD");

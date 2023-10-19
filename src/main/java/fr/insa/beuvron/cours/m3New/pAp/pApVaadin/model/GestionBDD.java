@@ -71,6 +71,12 @@ public class GestionBDD {
                 getPassPourServeurM3());
     }
 
+    public static Connection connectH2EmbededInMemory() throws SQLException {
+        Connection con = DriverManager.getConnection("jdbc:h2:mem:test");
+        con.setTransactionIsolation(Connection.TRANSACTION_SERIALIZABLE);
+        return con;
+    }
+
     /**
      * Creation du schéma. On veut créer tout ou rien, d'où la gestion explicite
      * des transactions.
@@ -225,7 +231,10 @@ public class GestionBDD {
     }
 
     public static void debut() {
-        try (Connection con = connectSurServeurM3()) {
+//        try (Connection con = connectSurServeurM3()) {
+        System.out.println("Attention : base de donnée en mémoire");
+        System.out.println(" ==> vous devez faire un RAZ de la BdD pour commencer");
+        try (Connection con = connectH2EmbededInMemory()) {
             System.out.println("connecté");
             menuPrincipal(con);
         } catch (SQLException ex) {

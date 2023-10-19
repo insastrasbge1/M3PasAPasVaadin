@@ -33,6 +33,11 @@ import java.util.Optional;
  */
 public class Utilisateur {
 
+    /**
+     * l'identificateur sera fixé à -1 pour un Uilisateur non sauvegardé
+     * dans la base de donnée, sinon, ce sera l'identificateur 
+     * dans la table des utilisateurs de la base de donnée.
+     */
     private int id;
     private String nom;
     private String pass;
@@ -59,6 +64,9 @@ public class Utilisateur {
     }
 
     public void saveInDBV1(Connection con) throws SQLException {
+        if (this.id != -1) {
+            throw new Error("Utilisateur déjà sauvegardé (id = " + this.id);
+        }
         try (PreparedStatement pst = con.prepareStatement(
                 "insert into li_utilisateur (nom,pass) values (?,?)",
                 PreparedStatement.RETURN_GENERATED_KEYS)) {
